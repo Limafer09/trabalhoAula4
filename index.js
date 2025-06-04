@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 const host = "0.0.0.0"; //todas as interfaces
 const port = 3000;
 var listadeUsuarios = [];
+var listadeProdutos = [];
 
 //aplicação servidora
 const app = express();
@@ -61,7 +62,7 @@ app.get("/", verificarAutenticacao, (requisicao, resposta) =>{
                                             <li><hr class="dropdown-divider"></li>
                                             <li><a class="dropdown-item" href="/#">Cadastro de Clientes</a></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="#">Cadastro de Produtos</a></li>
+                                            <li><a class="dropdown-item" href="/cadastroProdutos">Cadastro de Produtos</a></li>
                                         </ul>
                                     </li>
                                     <li class="nav-item">
@@ -397,6 +398,262 @@ conteudo = conteudo + ` </tbody>
     resposta.send(conteudo);
     resposta.end();
 });
+
+app.get("/cadastroProdutos", verificarAutenticacao, (requisicao, resposta) =>{
+    resposta.send(`
+        <html lang="pt-br">
+            <head>
+                <meta charset="UFT-8">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                    <title>Página inicial do aplicativo</title>
+            </head>
+            <body>
+                <div class="container w-75 mb-5 mt-5">
+                    <form method="POST" action="/cadastroProdutos" class="row g-3 border p-2" novalidate>
+                        <fieldset>
+                            <legend class="text-center">Cadastro de Produtos</legend>
+                        </fieldset>
+                        <div class="col-md-4">
+                            <label for="codigodebarras" class="form-label">Codigo de barras</label>
+                            <input type="text" class="form-control" id="codigodebarras" name="codigodebarras" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="descricaodoproduto" class="form-label">Descrição do produto</label>
+                            <input type="text" class="form-control" id="descricaodoproduto" name="descricaodoproduto" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="precodecusto" class="form-label">Preço de custo</label>
+                            <input type="text" class="form-control" id="precodecusto" name="precodecusto" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="precodevenda" class="form-label">Preço de venda</label>
+                            <input type="text" class="form-control" id="precodevenda" name="precodevenda" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="datadevalidade" class="form-label">Data de validade</label>
+                            <input type="text" class="form-control" id="datadevalidade" name="datadevalidade" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="quantidadeemestoque" class="form-label">Quantidade em estoque</label>
+                            <input type="text" class="form-control" id="quantidadeemestoque" name="quantidadeemestoque" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="nomedofabricante" class="form-label">Nome do fabricante</label>
+                            <input type="text" class="form-control" id="nomedofabricante" name="nomedofabricante" required>
+                        </div>                           
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="submit">Cadastre o produto</button>
+                            <a class="btn btn-secondary" href="/">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </body>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+        </html>
+    `);
+    resposta.end();
+
+});
+
+app.post("/cadastroProdutos", verificarAutenticacao, (requisicao, resposta) => {
+    const codigodebarras = requisicao.body.codigodebarras;
+    const descricaodoproduto = requisicao.body.descricaodoproduto;
+    const precodecusto = requisicao.body.precodecusto;
+    const precodevenda = requisicao.body.precodevenda;
+    const datadevalidade = requisicao.body.datadevalidade;
+    const quantidadeemestoque = requisicao.body.quantidadeemestoque;
+    const nomedofabricante = requisicao.body.nomedofabricante;
+
+    if(codigodebarras && descricaodoproduto && precodecusto && precodevenda && datadevalidade && quantidadeemestoque && nomedofabricante){
+        listadeProdutos.push({
+            codigodebarras: codigodebarras,
+            descricaodoproduto: descricaodoproduto,
+            precodecusto: precodecusto,
+            precodevenda: precodevenda,
+            datadevalidade: datadevalidade,
+            quantidadeemestoque: quantidadeemestoque,
+            nomedofabricante: nomedofabricante,
+
+        });
+        resposta.redirect("/listadeProdutos");
+    }
+    else{
+    
+    let conteudo = `
+        <html lang="pt-br">
+            <head>
+                <meta charset="UFT-8">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                    <title>Página inicial do aplicativo</title>
+            </head>
+            <body>
+                <div class="container w-75 mb-5 mt-5">
+                    <form method="POST" action="/cadastroProdutos" class="row g-3 border p-2" novalidate>
+                        <fieldset>
+                            <legend class="text-center">Cadastro de Produtos</legend>
+                        </fieldset>
+                        <div class="col-md-4"> `;
+                        if(!codigodebarras){
+                            conteudo = conteudo + `<label for="codigodebarras" class="form-label">Código de barras</label>
+                                                    <input type="text" class="form-control" id="codigodebarras" name="codigodebarras" required>
+                                                    <span class="text-danger">Informe o Código de barras</span>`;
+                        }
+                        else{
+                            conteudo = conteudo + `
+                                                <label for="codigodebarras" class="form-label">Código de barras</label>
+                                                <input type="text" class="form-control" id="codigodebarras" name="codigodebarras" value="${codigodebarras}" required>
+                                                `;
+                        }
+                            
+                        conteudo = conteudo + `</div>
+                                                <div class="col-md-4"> `;
+                                                if(!descricaodoproduto){
+                                                    conteudo = conteudo + `
+                                                    <label for="descricaodoproduto" class="form-label">Descrição do produto</label>
+                                                    <input type="text" class="form-control" id="descricaodoproduto" name="descricaodoproduto" required>
+                                                    <span class="text-danger">Informe a Descrição do produto</span>`;
+                                                }
+                                                else{
+                                                    conteudo = conteudo + `
+                                                                        <label for="descricaodoproduto" class="form-label">Descrição do produto</label>
+                                                                        <input type="text" class="form-control" id="descricaodoproduto" name="descricaodoproduto" value="${descricaodoproduto}"required>
+                                                                        `;
+                                                }
+                            
+                        conteudo = conteudo + `</div>
+                                                <div class="col-md-4"> ` ;
+                                                if (!precodecusto){
+                                                    conteudo = conteudo + `
+                                                                        <label for="precodecusto" class="form-label">Preço de custo</label>
+                                                                        <input type="text" class="form-control" id="precodecusto" name="precodecusto" required>
+                                                                        <span class="text-danger">Informe o Preço de custo</span>`;
+                                                }
+                                                else{
+                                                    conteudo = conteudo + `
+                                                                        <label for="precodecusto" class="form-label">Preço de custo</label>
+                                                                        <input type="text" class="form-control" id="precodecusto" name="precodecusto" value="${precodecusto}" required>`;
+                                                }
+
+                                                    conteudo = conteudo + `
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <label for="precodevenda" class="form-label">Preço de venda</label>`;
+                                                        if(!precodevenda){
+                                                            conteudo = conteudo + `
+                                                                            <input type="text" class="form-control" id="precodevenda" name="precodevenda" required>
+                                                                            <span class="text-danger">Informe o Preço de venda!</span>`;
+                                                        }
+                                                        else{
+                                                            conteudo = conteudo + `
+                                                                                    <input type="text" class="form-control" id="precodevenda" name="precodevenda" value=${precodevenda} required>
+                                                            `;
+                                                        }
+                                                    conteudo = conteudo + ` 
+                                                                        </div>
+                                                                        </div>
+                                                                        <div class="col-md-6"> `;
+                                                    if(!datadevalidade){
+                                                        conteudo = conteudo + 
+                                                                            `<label for="datadevalidade" class="form-label">Data de validade</label>
+                                                                            <input type="text" class="form-control" id="datadevalidade" name="datadevalidade" required>
+                                                                            <span class="text-danger">Por favor informe a Data de validade!!</span>`;
+                                                    }
+                                                    else{
+                                                        conteudo = conteudo + `
+                                                                        <label for="datadevalidade" class="form-label">Data de validade</label>
+                                                                        <input type="text" class="form-control" id="datadevalidade" name="datadevalidade" value="${datadevalidade}"required>`;
+                                                    }
+                                                    conteudo = conteudo + `
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label for="quantidadeemestoque" class="form-label">Quantidade em estoque</label>`;
+                                                    if(!quantidadeemestoque){
+                                                        conteudo = conteudo + `
+                                                                        <input type="text" class="form-control" id="quantidadeemestoque" name="quantidadeemestoque" required>
+                                                                        <span class="text-danger">Informe a Quantidade em estoque, por favor!!</span>`;
+                                                    }
+                                                    else{
+                                                        conteudo = conteudo + `
+                                                                                <input type="text" class="form-control" id="quantidadeemestoque" name="quantidadeemestoque" value=${quantidadeemestoque} required>
+                                                        `;
+                                                    }
+                                                    conteudo = conteudo + `
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label for="nomedofabricante" class="form-label">Nome do fabricante</label>`;
+                                                    if(!nomedofabricante){
+                                                        conteudo = conteudo + `
+                                                                        <input type="text" class="form-control" id="nomedofabricante" name="nomedofabricante" required>
+                                                                        <span class="text-danger">Informe o Nome do fabricante, por favor!!</span>`;
+                                                    }
+                                                    else{
+                                                        conteudo = conteudo + `
+                                                                                <input type="text" class="form-control" id="nomedofabricante" name="nomedofabricante" value=${nomedofabricante} required>
+                                                        `;
+                                                    }
+                                                    conteudo = conteudo + `
+                                                                    </div>                           
+                                                                    <div class="col-12">
+                                                                        <button class="btn btn-primary" type="submit">Cadastre o produto</button>
+                                                                        <a class="btn btn-secondary" href="/">Voltar</a>
+                            </div>
+                    </form>
+                </div>
+            </body>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+        </html>`;
+    resposta.send(conteudo);
+    resposta.end();
+    }
+});
+
+app.get("/listadeProdutos", verificarAutenticacao, (requisicao, resposta) => {
+    let conteudo= `
+        <html lang="pt-br">
+            <head>
+                <meta charset="UFT-8">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                    <title>Página inicial do aplicativo</title>
+            </head>
+            <body>
+                <div class="container w-75 mb-5 mt-5">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Codigo de barras</th>
+                                <th scope="col">Descrição do produto</th>
+                                <th scope="col">Preço de custo</th>
+                                <th scope="col">Preço de venda</th>
+                                <th scope="col">Data de validade</th>
+                                <th scope="col">Quantidade em estoque</th>
+                                <th scope="col">Nome do fabricante</th>
+                            </tr>
+                        </thead>
+                        <tbody> `;
+                        for(let i = 0; i < listadeProdutos.length; i++){
+                            conteudo = conteudo + `
+                                <tr>
+                                    <td>${listadeProdutos[i].codigodebarras}</td>
+                                    <td>${listadeProdutos[i].descricaodoproduto}</td>
+                                    <td>${listadeProdutos[i].precodecusto}</td>
+                                    <td>${listadeProdutos[i].precodevenda}</td>
+                                    <td>${listadeProdutos[i].datadevalidade}</td>
+                                    <td>${listadeProdutos[i].quantidadeemestoque}</td>
+                                    <td>${listadeProdutos[i].nomedofabricante}</td>
+                                </tr>
+                            `;
+                        }
+conteudo = conteudo + ` </tbody>
+                    </table>
+                    <a class="btn btn-secondary" href="/cadastroProdutos">Seguir Cadastrando....</a>
+                </div>
+            </body>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+        </html>`
+    resposta.send(conteudo);
+    resposta.end();
+});
+
 app.get("/login", (requisicao, resposta)=>{
     resposta.send(`
         <html lang="pt-br">
