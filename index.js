@@ -590,7 +590,7 @@ app.post("/login", (requisicao, resposta) =>{
     if(usuario == "admin" && senha == "123"){
         requisicao.session.logado = true;
         const dataHoraAtuais = new Date();
-        resposta.cookies('ultimoAcesso',dataHoraAtuais.toLocaleString(), {maxAge: 1000 * 60 * 60 * 24 * 30});
+        resposta.cookie('ultimoAcesso',dataHoraAtuais.toLocaleString(), {maxAge: 1000 * 60 * 60 * 24 * 30});
         resposta.redirect("/");
     }
     else{
